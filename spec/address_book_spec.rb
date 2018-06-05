@@ -32,4 +32,39 @@ RSpec.describe AddressBook do
             expect(new_entry.email).to eq('augusta.king@lovelace.com')
         end
     end
+
+    describe "#find_entry" do
+        it "returns the position of the first matching entry" do
+            book = AddressBook.new
+            book.add_entry('abc', '123.456.7890', 'def@ghi.com')
+            book.add_entry('abc', '123.456.7890', 'ghi@def.com')
+            book.add_entry('abc', '123.456.7890', 'def@ghi.com')
+            book.add_entry('abc', '123.456.7890', 'ghi@def.com')
+            position = book.find_entry('abc', '123.456.7890', 'ghi@def.com')
+            expect(position).to eq(1)
+        end
+
+        it "returns -1 if there is no match" do
+            book = AddressBook.new
+            book.add_entry('abc', '123.456.7890', 'def@ghi.com')
+            position = book.find_entry('abc', '123.456.7890', 'ghi@def.com')
+            expect(position).to eq(-1)
+        end
+    end
+
+    describe "#remove_entry" do
+        it "removes a single entry from the address book if a match is found" do
+            book = AddressBook.new
+            book.add_entry('Ada Lovelace', '010.012.1815', 'augusta.king@lovelace.com')
+            book.add_entry('abc', '123.456.7890', 'def@ghi.com')
+            book.remove_entry('abc', '123.456.7890', 'def@ghi.com')
+            expect(book.entries.size).to eq(1)
+        end
+        it "removes no entries from the address book if no match is found" do
+            book = AddressBook.new
+            book.add_entry('Ada Lovelace', '010.012.1815', 'augusta.king@lovelace.com')
+            book.remove_entry('abc', '123.456.7890', 'def@ghi.com')
+            expect(book.entries.size).to eq(1)
+        end
+    end
 end
