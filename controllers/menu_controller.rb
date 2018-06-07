@@ -10,6 +10,7 @@ class MenuController
     def main_menu
         # display menu options in command line
         puts "Main menu - #{address_book.entries.count} entries"
+        puts "\# - View entry by number"
         puts "1 - View all entries"
         puts "2 - Create an entry"
         puts "3 - Search for an entry"
@@ -17,9 +18,15 @@ class MenuController
         puts "5 - Exit"
         print "Enter your selection: "
         # accept standard input from the command line
-        selection = gets.to_i
+        selection = gets.chomp
+        selection = selection.to_i if selection.to_i != 0
         # handle input
         case selection
+            when "\#"
+                system "clear"
+                # puts " You choose #{selection}"
+                view_entry_by_index
+                main_menu
             when 1
                 system "clear"
                 view_all_entries
@@ -44,6 +51,28 @@ class MenuController
                 system "clear"
                 puts "Sorry, that is not a valid input\n\n"
                 main_menu
+        end
+    end
+
+    def view_entry_by_index
+        print "Enter the number of the entry: "
+        entry_num = gets.to_i
+        system "clear"
+        # validate: expect counting numbers from 1 up
+        if entry_num > 0 && entry_num <= address_book.entries.length
+            puts address_book.entries[entry_num - 1].to_s + "\n\n"
+        else
+            ordinal_suffix = "th"
+            last_digit = entry_num%10
+            case last_digit
+                when 1
+                    ordinal_suffix = "st"
+                when 2
+                    ordinal_suffix = "nd"
+                when 3
+                    ordinal_suffix = "rd"
+            end
+            puts "Sorry, there is no #{entry_num}#{ordinal_suffix} entry.\n\n"
         end
     end
 
