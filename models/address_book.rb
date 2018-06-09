@@ -41,26 +41,21 @@ class AddressBook
         return nil
     end
 
-    def binary_search(name)
-        # set lower and upper boundaries of search
-        lower = 0
-        upper = @entries.length - 1
-        # set up while loop
-        while lower <= upper
+    def binary_search(name, lower = 0, upper = @entries.length - 1)
+        if lower <= upper
             # find entry at mid-point and see if it matches input
             mid = (lower + upper) / 2
             mid_name = @entries[mid].name
             if name == mid_name
                 return @entries[mid]
             elsif name < mid_name
-                upper = mid - 1
+                binary_search(name, lower, mid - 1)
             elsif name > mid_name
-                lower = mid + 1
+                binary_search(name, mid + 1, upper)
             end
-
-
+        else
+            # if nothing found within while loop, name is not in AddressBook
+            return nil
         end
-        # if nothing found within while loop, name is not in AddressBook
-        return nil
     end
 end
