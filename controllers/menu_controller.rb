@@ -15,10 +15,13 @@ class MenuController
         puts "3 - Search for an entry"
         puts "4 - Import entries from a CSV"
         puts "5 - Exit"
+        puts "D - NUKE"
         print "Enter your selection: "
         # accept standard input from the command line
-        selection = gets.to_i
-        # handle input
+        selection = gets.chomp
+        if selection != "D"
+            selection = selection.to_i
+        end
         case selection
             when 1
                 system "clear"
@@ -40,9 +43,14 @@ class MenuController
                 system "clear"
                 puts "Goodbye!"
                 exit(0)
+            when "D"
+                address_book.entries.clear
+                system "clear"
+                puts "Address book is empty.\n\n"
+                main_menu
             else
                 system "clear"
-                puts "Sorry, that is not a valid input\n\n"
+                puts "Sorry, #{selection} is not a valid input\n\n"
                 main_menu
         end
     end
