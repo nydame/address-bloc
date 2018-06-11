@@ -10,7 +10,7 @@ class MenuController
     def main_menu
         # display menu options in command line
         puts "Main menu - #{address_book.entries.count} entries"
-        puts "1 - View all entries"
+        puts "1 - Browse entries"
         puts "2 - Create an entry"
         puts "3 - Search for an entry"
         puts "4 - Import entries from a CSV"
@@ -70,11 +70,13 @@ class MenuController
         # handle input
         case selection
         when "n"
-            #
+            # we implement this feature by doing nothing...cool!
         when "d"
-            #
+            delete_entry(entry)
+            entry_submenu(entry)
         when "e"
-            #
+            edit_entry(entry)
+            entry_submenu(entry)
         when "m"
             system "clear"
             main_menu
@@ -103,8 +105,108 @@ class MenuController
     end
 
     def search_entries
+        print "Search for a name: "
+        name = gets.chomp
+        match = address_book.binary_search(name)
+        system "clear"
+        if match
+            puts match.to_s
+            search_submenu(match)
+        else
+            puts "No match found for #{name}"
+        end
+    end
+
+    def search_submenu(entry)
+        # display submenu
+        puts "\nd - delete entry"
+        puts "e - edit entry"
+        puts "m - return to main menu"
+        # capture input
+        selection = gets.chomp
+        # handle input
+        case selection
+        when "d"
+            system "clear"
+            delete_entry(entry)
+            main_menu
+        when "e"
+            edit_entry(entry)
+            system "clear"
+            main_menu
+        when "m"
+            system "clear"
+            main_menu
+        else
+            system "clear"
+            puts "#{selection} is not a valid input"
+            puts entry.to_s
+            search_submenu(entry)
+        end
     end
 
     def read_csv
+        print "Enter CSV file to import: "
+        file_name = gets.chomp
+
+        if file_name.empty?
+            system "clear"
+            puts "File could not be read.\n\n"
+            main_menu
+        end
+
+        begin
+            entry_count = address_book.import_from_csv(file_name).count
+            system "clear"
+            puts "#{entry_count} new entries added from #{file_name}\n\n"
+        rescue
+            puts "#{file_name} could not be read as a CSV file."
+            puts "Would you like to try again? (y/n)"
+            answer = gets.chomp[0].downcase
+            if answer == "y"
+                read_csv
+            else
+                main_menu
+            end
+        end
+
     end
+
+    def delete_entry(entry)
+        address_book.entries.delete(entry)
+        puts "#{entry.name} has been deleted."
+    end
+
+    def edit_entry(entry)
+        # capture new data
+        print "New name (hit \'return\' if no changes): "
+        name = gets.chomp
+        puts "\n"
+        print "New phone number: (hit \'return\' if no changes)"
+        phone_number = gets.chomp
+        puts "\n"
+        print "New email: (hit \'return\' if no changes)"
+        puts "\n"
+        email = gets.chomp
+        # update entry in a way that preserves order of entries
+        # and encapsulation of Entry data
+        # (as opposed to the way it's done in the lesson!)
+        if name.empty?
+            # no need for a new entry
+            entry.phone_number(phone_number) if !phone_number.empty?
+            entry.email(email) if !email.empty?
+            puts entry
+            puts "Information for #{entry.name} has been updated."
+        else
+            # delete entry and add new one via add_entry
+            original_name = entry.name
+            phone_number = entry.phone_number if phone_number.empty?
+            email = entry.email if email.empty?
+            address_book.entries.delete(entry)
+            index = address_book.add_entry(name, phone_number, email)
+            puts address_book.entries[index]
+            puts "#{original_name} is now #{name}; update is complete."
+        end
+    end
+
 end

@@ -20,6 +20,7 @@ class AddressBook
             index += 1
         end
         @entries.insert(index, Entry.new(name, phone_number, email))
+        return index
     end
 
     def import_from_csv(file_name)
